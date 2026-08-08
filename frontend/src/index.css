@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #0b1220;
+  --color-panel: #111a2e;
+  --color-border: #1e293b;
+  --color-text: #f1f5f9;
+  --color-input: #0f172a;
+}
+
+:root.light {
+  --color-bg: #f1f5f9;
+  --color-panel: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-input: #f8fafc;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.2s ease, color 0.2s ease;
+}
