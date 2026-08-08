@@ -1,116 +1,241 @@
-# NetShield AI
+# 🛡️ NetShield AI
 
-AI-powered Network Anomaly Detection & Threat Monitoring System built with FastAPI, React + TypeScript, PostgreSQL, and scikit-learn (Isolation Forest).
+### AI-Powered Network Anomaly Detection & Threat Monitoring System
 
-## What's included
+NetShield AI is a full-stack cybersecurity platform that monitors network traffic, detects anomalous activity using Machine Learning, classifies detected threats using rule-based analysis, and provides real-time security monitoring through an interactive dashboard.
 
-- **JWT authentication** with **role-based access control** — the first person to register becomes `admin`; everyone after starts as `viewer`. Admins can promote users to `analyst` or `admin` from the Admin Panel. `viewer` = read-only, `analyst`/`admin` = can resolve alerts, `admin` = can manage roles and see the audit log.
-- **Audit log** — login, logout, registration, role changes, and alert resolutions are all recorded and viewable at `/admin` (admin only).
-- **Network log storage** — PostgreSQL via SQLAlchemy
-- **AI anomaly detection engine** — Isolation Forest, auto-trains on synthetic traffic on first run so it works out of the box (`backend/app/services/ml_service.py`). Each detected anomaly now also gets a rule-based **attack type** (DDoS / port scan / data exfiltration / brute force) and a **recommended action** — see the module docstring in `ml_service.py` for the honest caveat: this is a heuristic, not a trained classifier.
-- **Live traffic simulation over WebSockets** — a background loop (`backend/app/services/traffic_loop.py`) generates a simulated packet every ~2 seconds, runs it through the model, and broadcasts the result to any connected `/ws/traffic` client. The dashboard's "Live Traffic Feed" panel and "Threats Today" stat update from this in real time, no polling needed for that part.
-- **Threat map** — plots simulated attack origins on a lightweight SVG map. This uses illustrative coordinates, not real GeoIP lookups (see caveat in `traffic_simulator.py`).
-- **React + TypeScript dashboard** with Chart.js visualizations (risk scores, alert priority breakdown), extra summary cards (packets, threats today, high-risk alerts, avg risk, model self-check accuracy), and a light/dark theme toggle
-- **Docker Compose** setup for one-command local run
+Built as part of the **Infosys Springboard 8-Week Internship Project**.
 
-## Roles at a glance
+## 🚀 Tech Stack
 
-| Role | Can view dashboard | Can resolve alerts | Can manage users / see audit log |
-|---|---|---|---|
-| viewer | ✅ | ❌ | ❌ |
-| analyst | ✅ | ✅ | ❌ |
-| admin | ✅ | ✅ | ✅ |
+| Layer | Technologies |
+|---|---|
+| Frontend | React, TypeScript, Vite, Tailwind CSS, Chart.js |
+| Backend | FastAPI, Python, SQLAlchemy |
+| Database | PostgreSQL |
+| Machine Learning | Scikit-learn, Isolation Forest |
+| Authentication | JWT, Role-Based Access Control |
+| Real-Time Communication | WebSockets |
+| Deployment | Docker, Docker Compose |
 
-The **first account you register becomes admin automatically** — do that one first, then register a second account to see viewer-mode restrictions in action, and promote it from the Admin Panel.
+## ✨ Key Features
 
-## Option A: Run with Docker (easiest)
+- 🔐 JWT authentication and role-based access control
+- 🤖 ML-based network anomaly detection using Isolation Forest
+- 🚨 Threat detection with attack-type classification
+- ⚡ Real-time traffic monitoring using WebSockets
+- 📊 Interactive security dashboard
+- 🗺️ Threat visualization using a network threat map
+- 📝 Audit logging for security-related activities
+- 👥 Admin panel with user-role management
+- 🌓 Light/Dark theme support
+- 🐳 Docker Compose setup for local deployment
+
+
+## 🔍 How It Works
+
+NetShield AI follows a complete traffic-monitoring and threat-detection workflow:
+
+1. **User Authentication**  
+   Users authenticate using JWT-based authentication with role-based access control.
+
+2. **Network Traffic Generation**  
+   The system receives or generates network traffic samples containing features such as packet size, duration, source bytes, and destination bytes.
+
+3. **Anomaly Detection**  
+   The Machine Learning engine uses an **Isolation Forest** model to identify traffic that deviates from normal patterns.
+
+4. **Threat Classification**  
+   Detected anomalies are further analyzed using rule-based heuristics to identify possible attack categories such as:
+   - DDoS
+   - Port Scan
+   - Data Exfiltration
+   - Brute Force
+
+5. **Alert Generation**  
+   Suspicious traffic can generate threats and alerts with associated risk information and recommended actions.
+
+6. **Real-Time Monitoring**  
+   WebSockets continuously stream simulated traffic and detection results to the React dashboard without requiring constant polling.
+
+7. **Security Administration**  
+   Administrators can manage user roles and review security-related activities through the Admin Panel and audit logs.
+
+> **ML Note:** The current Isolation Forest model is trained on synthetic normal traffic for standalone operation. The attack-type classification is heuristic/rule-based and should not be considered a trained multi-class attack classifier.
+
+
+## 👥 Roles & Permissions
+
+| Role | View Dashboard | Resolve Alerts | Manage Users | View Audit Log |
+|---|---|---|---|---|
+| Viewer | ✅ | ❌ | ❌ | ❌ |
+| Analyst | ✅ | ✅ | ❌ | ❌ |
+| Admin | ✅ | ✅ | ✅ | ✅ |
+
+### Default Role Behavior
+
+- The **first registered account** automatically becomes an `admin`.
+- All subsequent accounts start as `viewer`.
+- Admins can promote users to `analyst` or `admin`.
+- Viewers have read-only access to the dashboard.
+- Analysts and admins can resolve alerts.
+- Only admins can manage user roles and access the audit log.
+
+> **Tip:** Register the first account as the administrator, then create a second account to test viewer restrictions and role-based access control.
+
+
+## 🐳 Installation & Setup
+
+### Option A — Docker Compose (Recommended)
+
+The easiest way to run the complete application locally is with Docker Compose.
 
 ```bash
 cd docker
 docker compose up --build
-```
 
-- Backend: http://localhost:8000 (docs at http://localhost:8000/docs)
-- Frontend: http://localhost:5173
-- Postgres: localhost:5432 (user/pass: postgres/postgres, db: netshield)
+## 🚀 First Run Walkthrough
 
-## Option B: Run manually (Windows)
+After starting the application, follow these steps to explore the main features.
 
-### 1. Backend
+### 1. Register the Administrator
 
-```powershell
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
-```
+Open:
 
-Edit `.env` and set `DATABASE_URL` to match your local PostgreSQL password (the one you set during install), e.g.:
+```text
+http://localhost:5173
 
-```
-DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/netshield
-```
+## 🧠 Machine Learning Pipeline
 
-Create the database (one time):
+NetShield AI currently uses an **Isolation Forest** anomaly detection model.
 
-```powershell
-psql -U postgres -c "CREATE DATABASE netshield;"
-```
+### Current Approach
 
-Run the server:
+The application is designed to work out of the box using synthetic normal network traffic. During the first run, the model can train on this baseline traffic and identify observations that significantly deviate from the learned pattern.
 
-```powershell
-uvicorn app.main:app --reload
-```
+The model uses network traffic features including:
 
-The API is now live at http://localhost:8000/docs (interactive Swagger UI — you can test every endpoint here).
+- `packet_size`
+- `duration`
+- `src_bytes`
+- `dst_bytes`
 
-### 2. Frontend
+### Real Dataset Training
 
-In a **new** terminal:
+The training pipeline can also be used with a real network intrusion-detection dataset.
 
-```powershell
-cd frontend
-npm install
-npm run dev
-```
+Compatible datasets can be prepared with the following columns:
 
-Open http://localhost:5173
+```text
+packet_size
+duration
+src_bytes
+dst_bytes
+label
 
-## First run walkthrough
 
-1. Open http://localhost:5173 → you'll land on the Login page.
-2. Click **Register**, create an account. **This first account becomes admin.**
-3. You're redirected to the Dashboard. Within ~2 seconds you should see the "Live Traffic Feed" panel start filling in — that's the simulated live stream running.
-4. Use **Analyze Traffic Sample** — plug in packet size / duration / bytes and hit Analyze. Values far from typical (e.g. packet_size 9000, duration 0.01) will trigger an "attack" prediction with an attack type and recommended action, and auto-create a Threat + Alert you'll see update live on the dashboard.
-5. Open **Admin Panel** (visible only to admins) to see the user list, change roles, and browse the audit log.
-6. Register a second account in an incognito window — it'll start as `viewer` and won't be able to resolve alerts until an admin promotes it.
-7. Toggle light/dark mode from the sidebar.
+## 📂 Project Structure
 
-## Plugging in a real dataset
-
-The bundled model trains on synthetic "normal" traffic so the app runs standalone. To use a real dataset (NSL-KDD, CICIDS2017, etc.):
-
-1. Drop your CSV into `ml/datasets/` with columns `packet_size, duration, src_bytes, dst_bytes, label`.
-2. Run:
-   ```bash
-   cd ml/training
-   python train_model.py --data ../datasets/your_file.csv
-   ```
-3. Restart the backend — it will load the newly trained `ml/models/isolation_forest.pkl`.
-
-## Project structure
-
-```
+```text
 NetShield-AI/
-├── backend/         FastAPI app (auth, logs, threats, alerts, ML endpoint)
-├── frontend/         React + TypeScript dashboard
-├── ml/                     training scripts, datasets, saved models
-├── docker/       docker-compose.yml
-└── docs/                  architecture notes, screenshots
-```
+├── backend/
+│   ├── app/
+│   │   ├── api/              # API routes
+│   │   ├── core/             # Configuration and security
+│   │   ├── database/         # Database connection
+│   │   ├── models/           # SQLAlchemy models
+│   │   ├── schemas/          # Pydantic schemas
+│   │   └── services/         # ML, traffic and WebSocket services
+│   ├── .env.example          # Environment variable template
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── context/          # Authentication and theme state
+│   │   ├── hooks/            # Custom React hooks
+│   │   ├── pages/            # Application pages
+│   │   └── services/         # API communication
+│   ├── Dockerfile
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── ml/
+│   └── training/
+│       └── train_model.py    # Model training pipeline
+│
+├── docker/
+│   └── docker-compose.yml    # Multi-container local setup
+│
+├── docs/                     # Project documentation
+├── .gitignore
+└── README.md
 
-## Roadmap for the rest of the internship
 
-This covers all 8 review points from the last check-in: real-dataset training pipeline (needs your own CICIDS2017/UNSW-NB15 download — see above), threat intelligence (attack type + recommended action), live traffic simulation + WebSockets, role-based access, audit logs, threat map, dark mode, and extra summary cards. Testing (pytest) and GitHub Actions CI are the two items from that list not yet added — good candidates for Week 7-8 polish.
+## 🗺️ Project Roadmap
+
+The project will continue to evolve throughout the 8-week internship.
+
+### Completed
+
+- [x] JWT authentication
+- [x] Role-based access control
+- [x] PostgreSQL network-log storage
+- [x] Isolation Forest anomaly detection
+- [x] Rule-based attack-type identification
+- [x] Recommended security actions
+- [x] Real-time traffic simulation
+- [x] WebSocket-based live monitoring
+- [x] Threat and alert management
+- [x] Audit logging
+- [x] Admin panel
+- [x] Threat map visualization
+- [x] Light/Dark theme
+- [x] Docker Compose setup
+- [x] Dashboard analytics
+
+### Planned Improvements
+
+- [ ] Train and evaluate the model using a real intrusion-detection dataset
+- [ ] Add automated ML evaluation and benchmarking
+- [ ] Add comprehensive backend and frontend tests
+- [ ] Add GitHub Actions CI pipeline
+- [ ] Improve threat intelligence and attack classification
+- [ ] Add architecture and database diagrams
+- [ ] Add application screenshots and demo documentation
+- [ ] Improve deployment and production configuration
+
+## ⚠️ Current Limitations
+
+NetShield AI is currently designed as an internship/project prototype rather than a production network-security appliance.
+
+Key limitations include:
+
+- Traffic generation is simulated rather than collected from a live network.
+- The bundled ML model uses synthetic normal traffic for standalone operation.
+- Attack-type identification currently uses rule-based heuristics.
+- Threat-map coordinates are illustrative and are not based on real GeoIP lookups.
+- Production deployment would require additional security hardening, monitoring, scalability, and infrastructure configuration.
+
+## 🧪 Testing
+
+Automated testing is planned as part of the later internship phases.
+
+The target testing stack includes:
+
+- `pytest` for backend/API testing
+- Frontend component testing
+- Authentication and authorization tests
+- ML pipeline validation
+- WebSocket functionality tests
+
+## 🤝 Contributing
+
+This project is being developed as part of an academic/internship project.
+
+Suggestions, bug reports, and improvements are welcome through GitHub Issues and Pull Requests.
+
+## 📄 License
+
+This project is currently intended for educational and internship purposes.
